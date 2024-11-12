@@ -4,19 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="49c56838-a9f0-40ee-afe1-abc9526f4e9d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/GS15 project.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cobra.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/KDF.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/init.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.txt" afterDir="false" />
-    </list>
+    <list default="true" id="49c56838-a9f0-40ee-afe1-abc9526f4e9d" name="Changes" comment="Commit jusqu'au debut Sbox" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,6 +20,12 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/lilsprgm/GS15.git",
+    "accountId": "cbbd4f4f-56d8-4ad4-a135-03f13d2e1fb4"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -107,8 +101,17 @@
       <workItem from="1731234478529" duration="7874000" />
       <workItem from="1731321255030" duration="7123000" />
       <workItem from="1731355656753" duration="1193000" />
-      <workItem from="1731424138751" duration="3391000" />
+      <workItem from="1731424138751" duration="3741000" />
     </task>
+    <task id="LOCAL-00001" summary="Commit jusqu'au debut Sbox">
+      <option name="closed" value="true" />
+      <created>1731427819634</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1731427819634</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -119,11 +122,27 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Commit jusqu'au debut Sbox" />
+    <option name="LAST_COMMIT_MESSAGE" value="Commit jusqu'au debut Sbox" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
