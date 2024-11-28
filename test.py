@@ -1,14 +1,9 @@
 import random
 
-x = 1
+def test():
+    return 1
 
 
-y = x.to_bytes()
-print(y)
+x= test() +1
 
-tab = bytes([0xff, 0x05])
-
-tab[0] = tab[0]& 0b01000000
-
-print(tab)
-
+print(x)

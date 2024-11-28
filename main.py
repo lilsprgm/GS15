@@ -4,7 +4,7 @@ import os
 import json
 import KDF
 import Cobra
-from Cobra import inv_sbox
+from Cobra import inv_sbox, inv_bits_order
 
 
 def setup_user_repo():
@@ -86,10 +86,12 @@ def menu(input):
 
 
 if __name__ == '__main__':
+    x = inv_bits_order(0b00000001)
+    """
     bin_file = Cobra.split_binary_file("test.txt")
     bin_file = Cobra.sbox(bin_file)
     bin_file = inv_sbox(bin_file)
-    """
+  
     while True:
         nb_menu = int(input("Choose function :\n"
               "1 : Create new user \n"

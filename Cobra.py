@@ -80,18 +80,19 @@ def add_round_key(file_bits):
 #Step 2 Substitution 32 fois Sbox 4 bits : 4 Sbox 0-7 8-16 ....
 
 # Step 1: Create the S-Boxes as random permutations of values 0 to 15
-def generate_sbox():
-    sbox = list(range(16))  # Possible values for 4 bits (0 to 15)
+def generate_sbox(size):
+    sbox = list(range(size))  # Possible values for 4 bits (0 to 15)
     random.shuffle(sbox)    # Shuffle the values for a permutation
     return sbox
 
 
 
 
-sbox1 = generate_sbox()
-sbox2 = generate_sbox()
-sbox3 = generate_sbox()
-sbox4 = generate_sbox()
+sbox1 = generate_sbox(16)
+sbox2 = generate_sbox(16)
+sbox3 = generate_sbox(16)
+sbox4 = generate_sbox(16)
+permut_matrix = generate_sbox(8)
 sboxes = [sbox1, sbox2, sbox3, sbox4]
 
 
@@ -128,6 +129,46 @@ def inv_sbox(input_block):
 
 
 
+#3
+
+def feistel_rere(input_blocks):
+    for block in input_blocks:
+        left = block[0:7]
+        right = block[7:16]
+
+        for byte in left:
+            byte = inv_bits_order(byte)
+            byte = inv_mod257(byte+1)-1
 
 
+def permutation(block):
+    resultat = block
+    for i in range(len(block)-1):
+        resultat[i] = block[permut_matrix[i]]
+    return resultat
+
+
+def inv_mod257(x,mod = 257):
+    """Calcule l'inverse multiplicatif de a modulo mod."""
+    for i in range(mod):
+        if (x * i) % mod == 1:
+            return i
+    return None  # Pas d'inverse multiplicatif si None
+
+#Question : est ce qu'on utilise mod avec les entier ou dans GF256 avec le polynome x^8 +1
+
+def inv_bits_order(byte):
+    result = 0
+    for i in range(8):
+        result = (result << 1) | (byte & 1) #byte & 1 = LSB comme on décale premier LSB se trouve MSB a la fin
+        byte >>= 1
+
+    return result
+
+def trans_lineaire(input_blocks):
+    for block in input_blocks:
+        A=block[0:3]
+        B=block[4:7]
+        C=block[8:11]
+        D=block[12:15]
 
