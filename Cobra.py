@@ -165,10 +165,59 @@ def inv_bits_order(byte):
 
     return result
 
+def concat_bytes(input):
+    # vérifier car pb dans la taille des sortie des fois
+    res = 0
+    for i in range (len(input)):
+        res = res<<8
+        res |= input[i]
+
+    return res
+
+
 def trans_lineaire(input_blocks):
+
+    # a vérifier avec si il faut mettre mod 32 ou pas
+    res = []
     for block in input_blocks:
-        A=block[0:3]
-        B=block[4:7]
-        C=block[8:11]
-        D=block[12:15]
+        a= concat_bytes(block[0:4])
+        b=concat_bytes(block[4:8])
+        c=concat_bytes(block[8:12])
+        d=concat_bytes(block[12:])
+
+        a = a<<13
+        c= c<<3
+        b = b+a+c
+        d = d + (a<<3)+c# mod 32 ou pas
+        b = b<<1
+        d = d<<7
+        a += b +d
+        c += (b<<7)+d
+        a = a << 5
+        c = c <<22
+
+# Cette partie marche pas à cause du append (a voir si il faut faire le modulo ou faire un to_byte avec une grand taille)
+"""
+        res.append(bytearray(a))
+        res.append(bytearray(b))
+        res.append(bytearray(c))
+        res.append(bytearray(d))        
+
+
+    return res
+"""
+
+def key_scheduling(key):
+    # key sous forme bytearray -> 32*8 = 256 bits
+    tab_key = []
+    phi = phi = (1 + 5**0.5) / 2
+    key += b'\x00' * (32 - len(key)) # on complète avec les 0
+    for i in range(0,8):
+        tab_key.append(concat_bytes(key[i*4:i*4+4]))
+
+    for i in range(8, 132):
+        tmp = (tab_key[i-8]+tab_key[i-5]+tab_key[i-3]+tab_key[i-1] + phi + i) << 11
+
+    # Comment on faire pour l'addition du phi ??? "constante binaire prédéfinie"
+
 

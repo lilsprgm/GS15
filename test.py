@@ -1,9 +1,8 @@
 import random
+# Définir une variable contenant un seul octet (8 bits)
+x = 0x1
+y = 0x01
 
-def test():
-    return 1
+res= (x<<8) | y
 
-
-x= test() +1
-
-print(x)
+print(res.to_bytes(2, byteorder='big'))
