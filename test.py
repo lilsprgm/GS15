@@ -1,8 +1,9 @@
 import random
 # Définir une variable contenant un seul octet (8 bits)
-x = 0x1
-y = 0x01
+x = 540
 
-res= (x<<8) | y
 
-print(res.to_bytes(2, byteorder='big'))
+length = 32
+
+mask = bytearray((2**length)-1)
+print (mask)

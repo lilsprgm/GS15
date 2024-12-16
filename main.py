@@ -4,7 +4,7 @@ import os
 import json
 import KDF
 import Cobra
-from Cobra import inv_sbox, inv_bits_order, trans_lineaire, key_scheduling
+from Cobra import inv_sbox, inv_bits_order, trans_lineaire, key_scheduling, split_binary_file, inv_trans_lineaire
 
 
 def setup_user_repo():
@@ -87,9 +87,10 @@ def menu(input):
 
 if __name__ == '__main__':
 
+    bin_file = split_binary_file("test.txt")
+    bin_file = trans_lineaire(bin_file)
+    bin_file = inv_trans_lineaire(bin_file)
 
-    bin_file = Cobra.split_binary_file("test.txt")
-    key_scheduling(bin_file[1])
     """
     bin_file = Cobra.sbox(bin_file)
     bin_file = inv_sbox(bin_file)

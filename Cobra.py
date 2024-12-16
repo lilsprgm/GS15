@@ -1,4 +1,5 @@
 from operator import index
+from sys import byteorder
 
 import  numpy as np
 import bitarray
@@ -28,7 +29,7 @@ def split_binary_file(filename, chunk_size=16):  # 16 bytes = 128 bits
     chunks[-1] += b'\x00' * (chunk_size - len(chunks[-1]))
     return chunks
 
-
+# Changer avec clé d'itération et pas LFSR
 def LFSR():
     """
     Generate a sequence of bits using a linear feedback shift register.
@@ -133,8 +134,8 @@ def inv_sbox(input_block):
 
 def feistel_rere(input_blocks):
     for block in input_blocks:
-        left = block[0:7]
-        right = block[7:16]
+        left = block[0:8]
+        right = block[8:16]                     # A vérifier pour les indices
 
         for byte in left:
             byte = inv_bits_order(byte)
@@ -164,48 +165,93 @@ def inv_bits_order(byte):
         byte >>= 1
 
     return result
-
+"""
+ !!! A simplifier avec int.frombyte
 def concat_bytes(input):
-    # vérifier car pb dans la taille des sortie des fois
+   
     res = 0
     for i in range (len(input)):
         res = res<<8
         res |= input[i]
 
     return res
+"""
+
+def dec_circ_left(block, block_size, n):
+    n = n%block_size
+    rotated_block = (block << n) & ((1 << block_size) - 1) | (block >> (block_size - n)) # correspond a partie gauche | partie droite
+    return rotated_block
+
+def dec_circ_right(block, block_size, n):
+    n = block_size - (n%block_size)
+    rotated_block = (block << n) & ((1 << block_size) - 1) | (block >> (block_size - n))# correspond a partie gauche | partie droite
+    print(bin(rotated_block))
+    return rotated_block
+
+def dec_lin_left(block, block_size, n):
+    if n<block_size:
+        rotated_block = (block << n) & ((1 << block_size) - 1)
+        return rotated_block
+    else:
+        return 0
 
 
 def trans_lineaire(input_blocks):
 
-    # a vérifier avec si il faut mettre mod 32 ou pas
     res = []
     for block in input_blocks:
-        a= concat_bytes(block[0:4])
-        b=concat_bytes(block[4:8])
-        c=concat_bytes(block[8:12])
-        d=concat_bytes(block[12:])
+        a=int.from_bytes(block[0:4], byteorder='big')
+        b=int.from_bytes(block[4:8], byteorder='big')
+        c=int.from_bytes(block[8:12], byteorder='big')
+        d=int.from_bytes(block[12:], byteorder='big')
 
-        a = a<<13
-        c= c<<3
-        b = b+a+c
-        d = d + (a<<3)+c# mod 32 ou pas
-        b = b<<1
-        d = d<<7
-        a += b +d
-        c += (b<<7)+d
-        a = a << 5
-        c = c <<22
+        a = dec_circ_left(a, 32, 13)
+        c= dec_circ_left(c, 32, 3)
+        b = a ^ b ^ c
+        d = d ^ c ^ dec_lin_left(a, 32, 3)
+        b = dec_circ_left(b, 32, 1)
+        d = dec_circ_left(d, 32, 7)
+        a = a^b^d
+        c = c ^ d ^ dec_lin_left(b, 32, 7)
+        a = dec_circ_left(a, 32, 5)
+        c = dec_circ_left(c, 32, 22)
 
-# Cette partie marche pas à cause du append (a voir si il faut faire le modulo ou faire un to_byte avec une grand taille)
-"""
-        res.append(bytearray(a))
-        res.append(bytearray(b))
-        res.append(bytearray(c))
-        res.append(bytearray(d))        
+        tmp = (a.to_bytes(4, byteorder='big') + b.to_bytes(4, byteorder='big')
+               +c.to_bytes(4, byteorder='big') +d.to_bytes(4, byteorder='big'))
 
+        res.append(tmp)
 
     return res
-"""
+
+
+def inv_trans_lineaire(input_blocks):
+    res = []
+    for block in input_blocks:
+        a = int.from_bytes(block[0:4], byteorder='big')
+        b = int.from_bytes(block[4:8], byteorder='big')
+        c = int.from_bytes(block[8:12], byteorder='big')
+        d = int.from_bytes(block[12:], byteorder='big')
+
+        c = dec_circ_right(c, 32, 22)
+        a = dec_circ_right(a, 32, 5)
+        c = c ^ d ^ dec_lin_left(b, 32, 7)
+        a = a ^ b ^ d
+        b = dec_circ_right(b, 32, 1)
+        d = dec_circ_right(d, 32, 7)
+        d = d ^ c ^ dec_lin_left(a, 32, 3)
+        b = a ^ b ^ c
+        a = dec_circ_right(a, 32, 13)
+        c = dec_circ_right(c, 32, 3)
+
+        tmp = a.to_bytes(4, byteorder='big') + b.to_bytes(4, byteorder='big') + c.to_bytes(4,
+                                                                                           byteorder='big') + d.to_bytes(
+            4, byteorder='big')
+
+        res.append(tmp)
+
+    return res
+
+
 
 def key_scheduling(key):
     # key sous forme bytearray -> 32*8 = 256 bits
@@ -219,5 +265,6 @@ def key_scheduling(key):
         tmp = (tab_key[i-8]+tab_key[i-5]+tab_key[i-3]+tab_key[i-1] + phi + i) << 11
 
     # Comment on faire pour l'addition du phi ??? "constante binaire prédéfinie"
+
 
 
