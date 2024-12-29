@@ -87,9 +87,7 @@ def menu(input):
 
 if __name__ == '__main__':
 
-    bin_file = split_binary_file("test.txt")
-    bin_file = trans_lineaire(bin_file)
-    bin_file = inv_trans_lineaire(bin_file)
+    KDF.test()
 
     """
     bin_file = Cobra.sbox(bin_file)
