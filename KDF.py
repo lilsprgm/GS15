@@ -134,3 +134,6 @@ def create_password():
     data = bytearray(password, "utf-8")
     hash_output = sha3(data, 256,24 )
     #print(hash_output.hex())
+    return hash_output
+
+

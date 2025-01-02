@@ -1,9 +1,3 @@
-import random
-# Définir une variable contenant un seul octet (8 bits)
-x = 540
+x=256
 
-
-length = 32
-
-mask = bytearray((2**length)-1)
-print (mask)
+print(x<<8)

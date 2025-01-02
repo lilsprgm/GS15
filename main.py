@@ -87,7 +87,8 @@ def menu(input):
 
 if __name__ == '__main__':
 
-    KDF.test()
+    mdp = KDF.create_password()
+    Cobra.key_scheduling(mdp)
 
     """
     bin_file = Cobra.sbox(bin_file)

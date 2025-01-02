@@ -99,34 +99,31 @@ sboxes = [sbox1, sbox2, sbox3, sbox4]
 
 
 # Step 2: Substitution function
-def sbox(input_block):
+def apply_sbox(block):
     """
     Apply substitution using the 4 S-Boxes on a 128-bit block
     (represented here as a list of 32 four-bit values)
     """
-    for block in input_block:
-        for i in range(16):
-            sbox = sboxes[i // 4]       # Choose the S-Box based on the index (0-7, 8-15, 16-23, 24-31)
-            left_part = (block[i] & 0xF0)>>4
-            right_part = block[i] & 0x0F# Take the lower 4 bits of each element
-            substituted_value_left = sbox[left_part]
-            substituted_value_right = sbox[right_part]
-            block[i] = substituted_value_left<<4 | substituted_value_right
+    for i in range(16):
+        sbox = sboxes[i // 4]       # Choose the S-Box based on the index (0-7, 8-15, 16-23, 24-31)
+        left_part = (block & 0xF0)>>4
+        right_part = block & 0x0F# Take the lower 4 bits of each element
+        substituted_value_left = sbox[left_part]
+        substituted_value_right = sbox[right_part]
+        block = substituted_value_left<<4 | substituted_value_right
 
+    return block
 
-    return input_block
+def inv_sbox(block):
+    for i in range(16):
+        sbox = sboxes[i // 4]       # Choose the S-Box based on the index (0-7, 8-15, 16-23, 24-31)
+        left_part = (block[i] & 0xF0)>>4
+        right_part = block[i] & 0x0F# Take the lower 4 bits of each element
+        inv_value_left = sbox.index(left_part)
+        inv_value_right = sbox.index(right_part)
+        block[i] = inv_value_left<<4 | inv_value_right
 
-def inv_sbox(input_block):
-    for block in input_block:
-        for i in range(16):
-            sbox = sboxes[i // 4]       # Choose the S-Box based on the index (0-7, 8-15, 16-23, 24-31)
-            left_part = (block[i] & 0xF0)>>4
-            right_part = block[i] & 0x0F# Take the lower 4 bits of each element
-            inv_value_left = sbox.index(left_part)
-            inv_value_right = sbox.index(right_part)
-            block[i] = inv_value_left<<4 | inv_value_right
-
-    return input_block
+    return block
 
 
 
@@ -165,18 +162,16 @@ def inv_bits_order(byte):
         byte >>= 1
 
     return result
-"""
- !!! A simplifier avec int.frombyte
-def concat_bytes(input):
-   
+
+def concat_blocks(input, blocksize):
     res = 0
-    for i in range (len(input)):
-        res = res<<8
-        res |= input[i]
-
+    for block in input:
+        res = res << blocksize
+        res ^= block
     return res
-"""
 
+
+# Pour toutes les fonction de décalage, la variable block size est en bit
 def dec_circ_left(block, block_size, n):
     n = n%block_size
     rotated_block = (block << n) & ((1 << block_size) - 1) | (block >> (block_size - n)) # correspond a partie gauche | partie droite
@@ -252,19 +247,33 @@ def inv_trans_lineaire(input_blocks):
     return res
 
 
-
 def key_scheduling(key):
     # key sous forme bytearray -> 32*8 = 256 bits
-    tab_key = []
-    phi = phi = (1 + 5**0.5) / 2
-    key += b'\x00' * (32 - len(key)) # on complète avec les 0
-    for i in range(0,8):
-        tab_key.append(concat_bytes(key[i*4:i*4+4]))
+    tab_box = []
+    phi = 0x16180339  # Constante binaire de longueur 4 octets
+    key += b'\x00' * (32 - len(key))  # Compléter avec des 0 pour obtenir 32 octets
 
+    # Extraction des premiers 8 blocs de 4 octets (32 bits)
+    for i in range(0, 8):
+        tab_box.append(int.from_bytes(key[i * 4:i * 4 + 4], byteorder='big'))
+
+    # Génération des 124 autres clés
     for i in range(8, 132):
-        tmp = (tab_key[i-8]+tab_key[i-5]+tab_key[i-3]+tab_key[i-1] + phi + i) << 11
+        tmp = (tab_box[i - 8] ^ tab_box[i - 5] ^ tab_box[i - 3] ^ tab_box[i - 1] ^ phi ^ i)
+        tmp = dec_circ_left(tmp, 32, 11)  # Décalage circulaire à gauche
+        tab_box.append(tmp)
 
-    # Comment on faire pour l'addition du phi ??? "constante binaire prédéfinie"
+
+    #Concatenation 4 blocs puis application des sbox
+    tab_key = []
+    for i in range (0, len(tab_key)):
+        tab_key.append(concat_blocks(tab_key[i:i+4],32))
+        i+=4
+
+    for i in range(0, len(tab_key)):
+        tab_key[i] = apply_sbox(tab_key[i])
+        
+    return tab_key
 
 
 
