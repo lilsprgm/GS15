@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="49c56838-a9f0-40ee-afe1-abc9526f4e9d" name="Changes" comment="">
+    <list default="true" id="49c56838-a9f0-40ee-afe1-abc9526f4e9d" name="Changes" comment="Commit avec génération de clé fini (-&gt; jusqua ZPK)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cobra.py" beforeDir="false" afterPath="$PROJECT_DIR$/Cobra.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDF.py" beforeDir="false" afterPath="$PROJECT_DIR$/KDF.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -137,7 +135,7 @@
       <workItem from="1734370179141" duration="6203000" />
       <workItem from="1734798437964" duration="10292000" />
       <workItem from="1735489949290" duration="6006000" />
-      <workItem from="1735810547503" duration="5798000" />
+      <workItem from="1735810547503" duration="13273000" />
     </task>
     <task id="LOCAL-00001" summary="Commit jusqu'au debut Sbox">
       <option name="closed" value="true" />
@@ -179,7 +177,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735490339408</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Commit avec génération de clé fini (-&gt; jusqua ZPK)">
+      <option name="closed" value="true" />
+      <created>1735817958653</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1735817958653</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -213,17 +219,11 @@
     <MESSAGE value="Commit Sbox fonctionne" />
     <MESSAGE value="Commit jusqu'a trans linéaire" />
     <MESSAGE value="Commit avec hash mot de passe fini (sha3)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit avec hash mot de passe fini (sha3)" />
+    <MESSAGE value="Commit avec génération de clé fini (-&gt; jusqua ZPK)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Commit avec génération de clé fini (-&gt; jusqua ZPK)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Cobra.py</url>
-          <line>272</line>
-          <option name="timeStamp" value="114" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">

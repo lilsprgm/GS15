@@ -1,3 +1,6 @@
-x=256
+x=0
 
-print(x<<8)
+for i in range(0, 4):
+    print (i)
+
+
