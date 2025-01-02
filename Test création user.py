@@ -10,7 +10,7 @@ def creation_cle(user):
     for utilisateur in data["utilisateurs"]:
         if utilisateur["username"] == user:
             print("<============================!! L'utilisateur existe déjà !!===========================================>")
-            break    
+            return
     print("<=================================================================Création du couple de clé publique/privée ==================================================>")
     #Limite de 1024 bits pour la création de clé
     upper_limit = 2**1024 - 1
@@ -57,6 +57,8 @@ def creation_cle(user):
 #Ecriture du la clé privée + Secret dans un fichier appartenant à l'utilisateur
 
     user_profile={
+        'p': p,
+        'q': q,
         'private_key': d,
         'secret': Sn
     }
@@ -121,10 +123,10 @@ def pgcd(a,b):
     pgcd = listedesrestes[len(listedesrestes)-2]
     return pgcd
 
-def recuperation_data(user):
+def recuperation_data_publique(user):
 
-    #Ouverture du fichier json de l'utilisateur afin de récupérer son certif + Clé Publique    
-    file_path = f'autorite_certificat.json'
+    #Ouverture du fichier json autorité certif afin de récupérer son certif + Clé Publique    
+    file_path = 'autorite_certificat.json'
     with open(file_path,'r') as file:
         data = json.load(file)
 
@@ -134,13 +136,58 @@ def recuperation_data(user):
     certificat = None
 
     for utilisateur in data["utilisateurs"]:
-        if utilisateur["username"] == "Enzo":
+        if utilisateur["username"] == user:
             public_key = utilisateur["public_key"][0]
             e = utilisateur["public_key"][1]
             certificat = utilisateur["certificat"]
-    
-    print(f"Clé publique :{public_key}\n{e}")
-    print(f"Certificat:{certificat}")
 
-creation_cle("Lilian")
-recuperation_data("Lilian")
+    return public_key,e,certificat
+
+def engagementzkp(public_key,e,user):
+    #Engagement de ZKP en chiffrant un message aléatoire m qui devient M avec un m appartenant a Zp
+    #Récupération de p pour générer m
+    file_path = f'{user}.json'
+    with open(file_path,'r') as file:
+        data = json.load(file)
+    p=data['p']
+    q=data['q']
+    if p>q:
+        p=q
+    m = random.randint(0,p)
+    #Calcul de l'engagement
+    M = pow(m,e,public_key)
+    return M
+
+def calculpreuvezkp(e,public_key,engagement_chiffré,user):
+    #Choix du challenge r
+    r = random.randint(0,e-1)
+    #Récupération de la clé privée par l'User
+    file_path = f'{user}.json'
+    with open(file_path,'r') as file:
+        data = json.load(file)
+    secret=data["secret"]
+    private_key=data["private_key"]
+    #Récupération de l'engagement en clair
+    engagement_clair=pow(engagement_chiffré,-private_key,public_key)
+    #Premier calcul de la preuve avec le secret du certificat de l'utilisateur
+    preuve1=pow(secret,-r,public_key)
+    preuve=(engagement_clair*preuve1)%public_key
+    return preuve,r 
+
+def verificationzkp(preuve,e,certificat,r,public_key,engagement_chiffré):
+    #Calcul de Preuve^e.Cert^r 
+    resultat1=(preuve^e)%public_key
+    resultat2=(certificat^r)%public_key
+    resultat=(resultat1*resultat2)%public_key
+    #Verification engagement = resultat
+    if resultat == engagement_chiffré:
+        print("Verification acceptée")
+    else:
+       print("Verification refusée")
+
+user="Enzo"
+creation_cle(user)
+public_key,e,certificat = recuperation_data_publique(user)
+engagement_chiffré = engagementzkp(public_key,e,user)
+preuve,r = calculpreuvezkp(e,public_key,engagement_chiffré,user)
+verificationzkp(preuve,e,certificat,r,public_key,engagement_chiffré)
