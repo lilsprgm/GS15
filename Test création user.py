@@ -168,7 +168,7 @@ def calculpreuvezkp(e,public_key,engagement_chiffré,user):
     secret=data["secret"]
     private_key=data["private_key"]
     #Récupération de l'engagement en clair
-    engagement_clair=pow(engagement_chiffré,-private_key,public_key)
+    engagement_clair=pow(engagement_chiffré,private_key,public_key)
     #Premier calcul de la preuve avec le secret du certificat de l'utilisateur
     preuve1=pow(secret,-r,public_key)
     preuve=(engagement_clair*preuve1)%public_key
@@ -176,8 +176,8 @@ def calculpreuvezkp(e,public_key,engagement_chiffré,user):
 
 def verificationzkp(preuve,e,certificat,r,public_key,engagement_chiffré):
     #Calcul de Preuve^e.Cert^r 
-    resultat1=(preuve^e)%public_key
-    resultat2=(certificat^r)%public_key
+    resultat1=pow(preuve,e,public_key)
+    resultat2=pow(certificat,r,public_key)
     resultat=(resultat1*resultat2)%public_key
     #Verification engagement = resultat
     if resultat == engagement_chiffré:
