@@ -84,43 +84,40 @@ def inv_sbox(block):
     return block
 
 #3
-
+# mettre tous les dans les fonction au meme type (ex int puis on convertit p
 def feistel(block, key):
-    left = []
-    right = []
+    left = int.from_bytes(block[0:8])
+    right = int.from_bytes(block[8:16])
     for i in range(4): # on applique 4 rondes par itération
-        left = block[0:8]
-        right = block[8:16]
         tmp_left = left
         left = right
         right = tmp_left ^ F_function(key, right)
 
     block = concat_blocks([left, right], 64)
-    return  block
+    return  bytearray(block.to_bytes(16,byteorder='big'))
 
 def inv_feistel(block, key):
-    left = []
-    right = []
+    left = int.from_bytes(block[0:8])
+    right = int.from_bytes(block[8:16])
     for i in range(4):
-        left = block[0:8]
-        right = block[8:16]
         tmp_right = right
         right = left
         left = tmp_right ^ F_function(key, left)
 
     block = concat_blocks([left, right], 64)
-    return block
+    return bytearray(block.to_bytes(16,byteorder='big'))
 
 
 
 def F_function(key, block):
+    block = bytearray(block.to_bytes(8, byteorder='big'))
     for i in range(len(block)):
         block[i] = inv_bits_order(block[i])
         block[i] = inv_mod257(block[i]+1)-1     # = (x+1)^-1 mod 257 -1
     block = permutation(block)
     # A faire étape 3 avec génération nb pseudo aléatoire et xor ???
 
-    return block
+    return int.from_bytes(block)
 
 
 def permutation(block):
@@ -242,8 +239,8 @@ def key_scheduling(key):
 
     #Concatenation 4 blocs puis application des sbox
     tab_key = []
-    for i in range (0, len(tab_key)):
-        tab_key.append(concat_blocks(tab_key[i:i+4],32))
+    for i in range (0, len(tab_box)):
+        tab_key.append(concat_blocks(tab_box[i:i+4],32))
         i+=4
 
     for i in range(0, len(tab_key)):

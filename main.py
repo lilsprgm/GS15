@@ -4,7 +4,8 @@ import os
 import json
 import KDF
 import Cobra
-from Cobra import inv_sbox, inv_bits_order, trans_lineaire, key_scheduling, split_binary_file, inv_trans_lineaire
+from Cobra import inv_sbox, inv_bits_order, trans_lineaire, key_scheduling, split_binary_file, inv_trans_lineaire, \
+    feistel, inv_feistel
 
 
 def setup_user_repo():
@@ -86,9 +87,9 @@ def menu(input):
 
 
 if __name__ == '__main__':
+    key = KDF.create_password()
+    file = Cobra.sym_encryption_cobra('test.txt', key, 1)
 
-    mdp = KDF.create_password()
-    Cobra.key_scheduling(mdp)
 
     """
     bin_file = Cobra.sbox(bin_file)
