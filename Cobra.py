@@ -31,8 +31,10 @@ def split_binary_file(filename, chunk_size=16):  # 16 bytes = 128 bits
 
 
 def add_round_key(block, key):
+    block = int.from_bytes(block, 'big')
+    key = int.from_bytes(key, 'big')
     block ^= key
-    return block
+    return bytearray(block.to_bytes(16,byteorder='big'))
 
 
 
@@ -62,13 +64,13 @@ def apply_sbox(block):
     Apply substitution using the 4 S-Boxes on a 128-bit block
     (represented here as a list of 32 four-bit values)
     """
-    for i in range(16):
+    for i in range(len(block)):
         sbox = sboxes[i // 4]       # Choose the S-Box based on the index (0-7, 8-15, 16-23, 24-31)
-        left_part = (block & 0xF0)>>4
-        right_part = block & 0x0F# Take the lower 4 bits of each element
+        left_part = (block[i] & 0xF0)>>4
+        right_part = block[i] & 0x0F# Take the lower 4 bits of each element
         substituted_value_left = sbox[left_part]
         substituted_value_right = sbox[right_part]
-        block = substituted_value_left<<4 | substituted_value_right
+        block[i]= substituted_value_left<<4 | substituted_value_right
 
     return block
 
@@ -239,9 +241,8 @@ def key_scheduling(key):
 
     #Concatenation 4 blocs puis application des sbox
     tab_key = []
-    for i in range (0, len(tab_box)):
-        tab_key.append(concat_blocks(tab_box[i:i+4],32))
-        i+=4
+    for i in range (0, len(tab_box), 4):
+        tab_key.append(bytearray(concat_blocks(tab_box[i:i+4],32).to_bytes(16, byteorder='big')))
 
     for i in range(0, len(tab_key)):
         tab_key[i] = apply_sbox(tab_key[i])
@@ -249,29 +250,33 @@ def key_scheduling(key):
     return tab_key
 
 def sym_encryption_cobra(file_name, key, nb_round):
-    file = split_binary_file(file_name)
+    data = split_binary_file(file_name)
     tab_key = key_scheduling(key)
     for i in range(0, nb_round):
-        for j in range (0, len(file)):
-            file[j] = add_round_key(file[j], tab_key[i])
-            file[j] = apply_sbox(file[j])
-            file[j] = feistel(file[j], key)
-            file[j] = trans_lineaire(file[j])
+        for j in range (0, len(data)):
+            data[j] = add_round_key(data[j], tab_key[i])
+            data[j] = apply_sbox(data[j])
+            data[j] = feistel(data[j], key)
+            data[j] = trans_lineaire(data[j])
 
-    return file
-
+    with open(file_name, 'wb') as file:
+        for i in range (0, len(data)):
+            file.write(data[i])
 
 
 
 def sym_decryption_cobra(file_name, key, nb_round):
-    file = split_binary_file(file_name)
+    data = split_binary_file(file_name)
     tab_key = key_scheduling(key)
     for i in range(0, nb_round):
-        for j in range (0, len(file)):
-            file[j] = inv_trans_lineaire(file[j])
-            file[j] = inv_feistel(file[j], tab_key[nb_round-i-1])
-            file[j] = inv_sbox(file[j])
-            file[j] = add_round_key(file[j], tab_key[nb_round-i-1])
+        for j in range (0, len(data)):
+            data[j] = inv_trans_lineaire(data[j])
+            data[j] = inv_feistel(data[j], tab_key[nb_round-i-1])
+            data[j] = inv_sbox(data[j])
+            data[j] = add_round_key(data[j], tab_key[nb_round-i-1])
 
-    return file
+
+    with open(file_name, 'wb') as file:
+        for i in range (0, len(data)):
+            file.write(data[i])
 

@@ -88,8 +88,8 @@ def menu(input):
 
 if __name__ == '__main__':
     key = KDF.create_password()
-    file = Cobra.sym_encryption_cobra('test.txt', key, 1)
-
+    Cobra.sym_encryption_cobra('test.txt', key, 1)
+    Cobra.sym_decryption_cobra('test.txt', key, 1)
 
     """
     bin_file = Cobra.sbox(bin_file)
