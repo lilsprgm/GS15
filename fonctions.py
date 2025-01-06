@@ -3,6 +3,8 @@ import random
 import math
 import getpass
 import Cobra
+import KDF
+
 
 def creation_cle(user, hash_mdp): #Ajouter motdepasse en cle de chiffrement
     print("<=================================================================Création du couple de clé publique/privée ==================================================>")
@@ -150,11 +152,11 @@ def engagementzkp(public_key,e):
 def calculpreuvezkp(e,public_key,engagement_chiffré,user,hash_mdp):
     #Choix du challenge r
     r = random.randint(0,e-1)
-    #DECHIFFRER LE FICHIER USER.JSON AVEC LE HASH_MDP
     file_path = f'{user}.json'
+    Cobra.sym_decryption_cobra(file_path, hash_mdp,12)  # DECHIFFRER LE FICHIER USER.JSON AVEC LE HASH_MDP
     with open(file_path,'r') as file:
         data = json.load(file)
-    #RECHIFFRER LE FICHIER USER.JSON AVEC HASH_MDP
+    Cobra.sym_encryption_cobra(file_path, hash_mdp,12)#RECHIFFRER LE FICHIER USER.JSON AVEC HASH_MDP
     secret=data["secret"]
     private_key=data["private_key"]
     #Récupération de l'engagement en clair
@@ -208,11 +210,11 @@ def verificationmdp():
             print("\nLes mots de passe sont différents, veuillez réessayer.\n")
 
 def verification_connexion_mdp(username,hash_mdp):
-    #Rajouter fonction permettant de déchiffrer le fichier {user}.json avec la clé MDP
     file_path = f'{username}.json'
+    Cobra.sym_decryption_cobra(file_path, hash_mdp, 12)
     with open(file_path,'r') as file:
         data = json.load(file)
-    #RECHIFFRER LE DOCUMENT {user}.json
+    Cobra.sym_encryption_cobra(file_path, hash_mdp,12)
     try:
         data["autorisation"] = "oui"
         return 1
@@ -221,11 +223,12 @@ def verification_connexion_mdp(username,hash_mdp):
      
 def generationcertificatcoffrefort():
     password = "Ceciestuncoffrefort"
-    #RAJOUTER LA FONCTION PERMETTANT DE TRANSFORMER LE MDP EN CLE + DECHIFFRER LE FICHIER coffrefort.json
+    hash_mdp = KDF.hash_password(password)
     file_path = 'coffrefort.json'
+    Cobra.sym_decryption_cobra(file_path, hash_mdp, 12)
     with open(file_path,'r') as file:
         data = json.load(file)
-    #CHIFFRER A NOUVEAU LE FICHIER coffrefort.json avec CLE MDP
+    Cobra.sym_encryption_cobra(file_path, hash_mdp, 12)
     secret = data["secret"]
     file_path = 'autorite_certificat.json'
     with open(file_path,'r') as file:
