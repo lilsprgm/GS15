@@ -1,101 +1,44 @@
-import numpy as np
-import bitarray
-import os
-import json
+import fonctions
 import KDF
 import Cobra
-from Cobra import inv_sbox, inv_bits_order, trans_lineaire, key_scheduling, split_binary_file, inv_trans_lineaire, \
-    feistel, inv_feistel
 
+def menu1():
+    menu = input("Que souhaitez vous faire ? \n <-1-> Connexion \n <-2-> Inscription \n <-3-> Quitter \n \n Veuillez entrer le numéro de fonction choisi\n")
 
-def setup_user_repo():
-    """
-    Ensure the 'users' repository exists.
-    """
-    repo_name = "users"
-    if not os.path.exists(repo_name):
-        os.makedirs(repo_name)
-        print(f"The '{repo_name}' repository has been created.")
+    if menu == "1":
+        connexion()
+    elif menu == "2":
+        inscription()
+    elif menu == "3":
+        return
+    else:
+        print("\nVeuillez entrez un numéro valide\n")
+        menu1()
 
-    # Make sure the repo is only accessible by the program, or that the json file are only readable by the program itself or the admin.
+def connexion():
+    print("Connexion")
 
-def key_derivation_function(password):
-    public_key = KDF.derive_key_from_password(password)
-    return public_key
+def inscription():
+    
+    username = input("Quel est votre nom d'utilisateur ?\n")
 
-def save_user_profile(username, password):
-    """
-    Save the user profile to a file with the username as the filename.
-    """
-    # Ensure the users directory exists
-    setup_user_repo()
+    if username == "coffrefort":
+        print("Nom d'utilisateur refusé")
+        inscription()
+    
+    test = fonctions.verification_creation_user(username)
 
-    # Hash the password
+    if test == 0:
+        print("Nom d'utilisateur déjà utilisé")
+        inscription()
+    
+    motdepasse = fonctions.verificationmdp()
 
-
-    # Define the user profile with only username and hashed password
-    user_profile = {
-        "username": username,
-        "hashed_password": key_derivation_function(password),  # decode for JSON compatibility
-        "public_key": "",
-        "private_key": "",
-        "permissions": []
-    }
-
-    # File path for the user profile
-    file_path = os.path.join("users", f"{username}.json")
-
-    # Save the user profile as a JSON file
-    with open(file_path, 'w') as file:
-        json.dump(user_profile, file, indent=4)
-
-    print(f"User profile for '{username}' has been created.")
-
-
-def create_new_user():
-    """
-    Collects username and password, validates password, and saves the user profile.
-    """
-
-    username = input("Enter username: ")
-
-    # Password validation loop
-    while True:
-        password = input("Enter password: ")
-
-        # Validate password
-        if len(password) < 8:
-            print("Password must be at least 8 characters long.")
-        elif not any(char.isupper() for char in password):
-            print("Password must contain at least one uppercase letter.")
-        elif not any(char.isdigit() for char in password):
-            print("Password must contain at least one number.")
-        else:
-            # Save user profile if password is valid
-            save_user_profile(username, password)
-            break
-
-
-#def login():
-
-
-def menu(input):
-    if input==1:
-        create_new_user()
-    elif input==2:
-        login()
-
+    hash_mdp = KDF.hash_password(motdepasse)#AJOUTER LES FONCTIONS NECESSAIRES POUR TRANSFORMER MOTDEPASSE EN CLE DE CHIFFREMENT
+    
+    fonctions.creation_cle(username, hash_mdp) #RAJOUTER motdepasse DANS LES VARIABLES A ENTRER DANS LA FONCTION
+    
 
 if __name__ == '__main__':
-
-
-    """
-    bin_file = Cobra.sbox(bin_file)
-    bin_file = inv_sbox(bin_file)
-  
-    while True:
-        nb_menu = int(input("Choose function :\n"
-              "1 : Create new user \n"
-              "2 : Login\n"))
-        menu(nb_menu)   """
-
+    print("Bienvenu sur le coffre fort le plus sécurisé ! \n ")
+    menu1()
