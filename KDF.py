@@ -177,14 +177,13 @@ def sha3(data, output_length, nb_squeeze):
 
     return output[:output_length // 8]
 
-def create_password():
+def hash_password(password):
     """
     Crée un mot de passe haché en utilisant SHA-3.
 
+    :param password: Le mot de passe en clair, rentré par l'utilisateur
     :return: Le hachage du mot de passe.
     """
-    password = input("Entrez votre mot de passe : ")
     data = bytearray(password, "utf-8")
     hash_output = sha3(data, 256, 24)
-    # print(hash_output.hex())
     return hash_output

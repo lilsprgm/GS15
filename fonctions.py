@@ -2,8 +2,9 @@ import json
 import random
 import math
 import getpass
+import Cobra
 
-def creation_cle(user): #Ajouter motdepasse en cle de chiffrement
+def creation_cle(user, hash_mdp): #Ajouter motdepasse en cle de chiffrement
     print("<=================================================================Création du couple de clé publique/privée ==================================================>")
     #Limite de 1024 bits pour la création de clé
     upper_limit = 2**1024 - 1
@@ -62,7 +63,7 @@ def creation_cle(user): #Ajouter motdepasse en cle de chiffrement
     with open(file_path, "w") as json_file:
         json.dump(user_profile, json_file, indent=4)
     
-    #RAJOUTER LA FONCTION PERMETTANT DE CHIFFRER LE FICHIER AVEC LE MOT DE PASSE
+    Cobra.sym_encryption_cobra(file_path, hash_mdp, 12)
 
     print("<=======================================================Création réussie===============================>")
 

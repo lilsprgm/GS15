@@ -1,4 +1,6 @@
 import fonctions
+import KDF
+import Cobra
 
 def menu1():
     menu = input("Que souhaitez vous faire ? \n <-1-> Connexion \n <-2-> Inscription \n <-3-> Quitter \n \n Veuillez entrer le numéro de fonction choisi\n")
@@ -32,7 +34,7 @@ def inscription():
     
     motdepasse = fonctions.verificationmdp()
 
-    #AJOUTER LES FONCTIONS NECESSAIRES POUR TRANSFORMER MOTDEPASSE EN CLE DE CHIFFREMENT
+    hash_mdp = KDF.hash_password(motdepasse)#AJOUTER LES FONCTIONS NECESSAIRES POUR TRANSFORMER MOTDEPASSE EN CLE DE CHIFFREMENT
     
     fonctions.creation_cle(username) #RAJOUTER motdepasse DANS LES VARIABLES A ENTRER DANS LA FONCTION
     
