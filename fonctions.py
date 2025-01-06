@@ -4,7 +4,10 @@ import math
 import getpass
 import Cobra
 import KDF
+import shutil
+import os
 
+#anticonstitu / Malabar
 
 def creation_cle(user, hash_mdp): #Ajouter motdepasse en cle de chiffrement
     print("<=================================================================Création du couple de clé publique/privée ==================================================>")
@@ -155,7 +158,9 @@ def calculpreuvezkp(e,public_key,engagement_chiffré,user,hash_mdp):
     file_path = f'{user}.json'
     Cobra.sym_decryption_cobra(file_path, hash_mdp,12)  # DECHIFFRER LE FICHIER USER.JSON AVEC LE HASH_MDP
     with open(file_path,'r') as file:
-        data = json.load(file)
+        content = file.read()
+    clean_content=content.strip('\x00')
+    data = json.loads(clean_content)
     Cobra.sym_encryption_cobra(file_path, hash_mdp,12)#RECHIFFRER LE FICHIER USER.JSON AVEC HASH_MDP
     secret=data["secret"]
     private_key=data["private_key"]
@@ -211,14 +216,22 @@ def verificationmdp():
 
 def verification_connexion_mdp(username,hash_mdp):
     file_path = f'{username}.json'
-    Cobra.sym_decryption_cobra(file_path, hash_mdp, 12)
-    with open(file_path,'r') as file:
-        data = json.load(file)
-    Cobra.sym_encryption_cobra(file_path, hash_mdp,12)
-    try:
+    new_file_path = f'{username}2.json'
+    shutil.copy2(file_path,new_file_path)
+
+    try: 
+        Cobra.sym_decryption_cobra(new_file_path, hash_mdp, 12)
+        with open(new_file_path,'r') as file:
+            content = file.read()
+        Cobra.sym_encryption_cobra(new_file_path, hash_mdp,12)
+        clean_content=content.strip('\x00')
+        data = json.loads(clean_content)
+        
         data["autorisation"] = "oui"
+        os.remove(new_file_path)
         return 1
     except:
+        os.remove(new_file_path)
         return 0
      
 def generationcertificatcoffrefort():
@@ -227,9 +240,11 @@ def generationcertificatcoffrefort():
     file_path = 'coffrefort.json'
     Cobra.sym_decryption_cobra(file_path, hash_mdp, 12)
     with open(file_path,'r') as file:
-        data = json.load(file)
-    Cobra.sym_encryption_cobra(file_path, hash_mdp, 12)
+        content = file.read()
+    clean_content=content.strip('\x00')
+    data = json.loads(clean_content)
     secret = data["secret"]
+    Cobra.sym_encryption_cobra(file_path, hash_mdp, 12)
     file_path = 'autorite_certificat.json'
     with open(file_path,'r') as file:
         data = json.load(file)

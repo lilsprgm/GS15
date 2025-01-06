@@ -23,6 +23,10 @@ def connexion():
 
     username = input("Entrez votre nom d'utilisateur \n")
 
+    if username == "coffrefort":
+        print("Connexion interdite")
+        connexion()
+
     testexistance = fonctions.verificationexistanceuser(username)
 
     if testexistance == 0:
@@ -79,7 +83,7 @@ def inscription():
     motdepasse = fonctions.verificationmdp()
 
     hash_mdp = KDF.hash_password(motdepasse)#AJOUTER LES FONCTIONS NECESSAIRES POUR TRANSFORMER MOTDEPASSE EN CLE DE CHIFFREMENT
-    
+
     fonctions.creation_cle(username, hash_mdp) #RAJOUTER motdepasse DANS LES VARIABLES A ENTRER DANS LA FONCTION
 
     print("Vous allez être redirigé vers la page de connexion\n")
