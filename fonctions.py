@@ -147,13 +147,14 @@ def engagementzkp(public_key,e):
     M = pow(m,e,public_key)
     return M
 
-def calculpreuvezkp(e,public_key,engagement_chiffré,user):
+def calculpreuvezkp(e,public_key,engagement_chiffré,user,hash_mdp):
     #Choix du challenge r
     r = random.randint(0,e-1)
-    #Récupération de la clé privée par l'User
+    #DECHIFFRER LE FICHIER USER.JSON AVEC LE HASH_MDP
     file_path = f'{user}.json'
     with open(file_path,'r') as file:
         data = json.load(file)
+    #RECHIFFRER LE FICHIER USER.JSON AVEC HASH_MDP
     secret=data["secret"]
     private_key=data["private_key"]
     #Récupération de l'engagement en clair
@@ -170,9 +171,9 @@ def verificationzkp(preuve,e,certificat,r,public_key,engagement_chiffré):
     resultat=(resultat1*resultat2)%public_key
     #Verification engagement = resultat
     if resultat == engagement_chiffré:
-        print("Verification acceptée")
+        return 1
     else:
-       print("Verification refusée")
+       return 0
 
 def verification_creation_user(user):
     #Test de si l'utilisateur existe déjà
@@ -205,3 +206,58 @@ def verificationmdp():
             return password  # Retourner le mot de passe validé
         else:
             print("\nLes mots de passe sont différents, veuillez réessayer.\n")
+
+def verification_connexion_mdp(username,hash_mdp):
+    #Rajouter fonction permettant de déchiffrer le fichier {user}.json avec la clé MDP
+    file_path = f'{username}.json'
+    with open(file_path,'r') as file:
+        data = json.load(file)
+    #RECHIFFRER LE DOCUMENT {user}.json
+    try:
+        data["autorisation"] = "oui"
+        return 1
+    except:
+        return 0
+     
+def generationcertificatcoffrefort():
+    password = "Ceciestuncoffrefort"
+    #RAJOUTER LA FONCTION PERMETTANT DE TRANSFORMER LE MDP EN CLE + DECHIFFRER LE FICHIER coffrefort.json
+    file_path = 'coffrefort.json'
+    with open(file_path,'r') as file:
+        data = json.load(file)
+    #CHIFFRER A NOUVEAU LE FICHIER coffrefort.json avec CLE MDP
+    secret = data["secret"]
+    file_path = 'autorite_certificat.json'
+    with open(file_path,'r') as file:
+        data = json.load(file)
+    public_key = None
+    e = None
+    for utilisateur in data["utilisateurs"]:
+        if utilisateur["username"] == "coffrefort":
+            public_key = utilisateur["public_key"][0]
+            e = utilisateur["public_key"][1]
+    certificat = pow(secret,e,public_key)
+    return certificat
+
+def verificationcertificat(certificatpresume):
+    file_path = 'autorite_certificat.json'
+    with open(file_path,'r') as file:
+        data = json.load(file)
+    certificat = None
+    for utilisateur in data["utilisateurs"]:
+        if utilisateur["username"] == "coffrefort":
+            certificat = utilisateur["certificat"]
+    if certificatpresume == certificat:
+        return 1
+    else:
+        return 0
+    
+def verificationexistanceuser(username):
+    file_path = 'autorite_certificat.json'
+    with open(file_path,'r') as file:
+        data = json.load(file)
+    resultat = 0
+    for utilisateur in data["utilisateurs"]:
+        if utilisateur["username"] == username:
+            resultat = 1
+    return resultat

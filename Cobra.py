@@ -96,8 +96,8 @@ def feistel(block, key):
     :param key: La clé de chiffrement.
     :return: Le bloc après application de la structure de Feistel.
     """
-    left = int.from_bytes(block[0:8])
-    right = int.from_bytes(block[8:16])
+    left = int.from_bytes(block[0:8],byteorder='big')
+    right = int.from_bytes(block[8:16],byteorder='big')
     for i in range(4):  # On applique 4 rondes par itération
         tmp_left = left
         left = right
@@ -113,8 +113,8 @@ def inv_feistel(block, key):
     :param key: La clé de déchiffrement.
     :return: Le bloc après application de l'inverse de la structure de Feistel.
     """
-    left = int.from_bytes(block[0:8])
-    right = int.from_bytes(block[8:16])
+    left = int.from_bytes(block[0:8],byteorder='big')
+    right = int.from_bytes(block[8:16],byteorder='big')
     for i in range(4):
         tmp_right = right
         right = left
@@ -135,7 +135,7 @@ def F_function(key, block):
         block[i] = inv_bits_order(block[i])
         block[i] = inv_mod257(block[i] + 1) - 1  # = (x+1)^-1 mod 257 -1
     block = permutation(block)
-    return int.from_bytes(block)
+    return int.from_bytes(block,byteorder='big')
 
 def permutation(block):
     """
