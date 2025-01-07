@@ -279,3 +279,25 @@ def verificationexistanceuser(username):
         if utilisateur["username"] == username:
             resultat = 1
     return resultat
+
+def chiffrement_message(username,message_à_chiffrer,hash_mdp):
+    file_path = f'{username}_message_chiffré.json'
+    message = {
+        'autorisation': "oui",
+        'message': message_à_chiffrer
+    }
+    with open(file_path, "w") as json_file:
+        json.dump(message, json_file, indent=4)
+    Cobra.sym_encryption_cobra(file_path, hash_mdp,12)
+    print("Message chiffré")
+
+def dechiffrement_message(username,hash_mdp):
+    file_path = f'{username}_message_chiffré.json'
+    Cobra.sym_decryption_cobra(file_path, hash_mdp, 12)
+    with open(file_path,'r') as file:
+        content = file.read()
+    clean_content=content.strip('\x00')
+    data = json.loads(clean_content)
+    message_clair = data["message"]
+    print(f'Le message déchiffré est :{message_clair}')
+    os.remove(file_path)
