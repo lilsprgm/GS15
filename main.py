@@ -17,25 +17,33 @@ def menu1():
         menu1()
 
 def menu2(username,hash_mdp):
-    menu = input(f'Bienvene {username}, que souhaitez vous faire ?\n<-1->Chiffrer un message\n<-2->Déchiffrer un message\n<-3->Chiffrer un fichier\n<-4->Déchiffrer un fichier\n<-5->Renitialiser le couple publique/privé\n<-6->Deconnexion\n')
+    menu = input(f'Bienvene {username}, que souhaitez vous faire ?\n<-1->Chiffrer un message\n<-2->Déchiffrer un message\n<-3->Chiffrer un fichier\n<-4->Déchiffrer un fichier\n<-5->Renitialiser le couple publique/privé + Certificat\n<-6->Suppression de l utilisateur\n<-7->Deconnexion\n')
     if menu == "1":
         message_a_chiffrer = input("Entrez le message que vous souhaitez chiffrer\n")
         fonctions.chiffrement_message(username,message_a_chiffrer,hash_mdp)
         menu2(username,hash_mdp)
     
-    if menu == "2":
+    elif menu == "2":
         fonctions.dechiffrement_message(username,hash_mdp)
         menu2(username,hash_mdp)
 
-    if menu == "3":
+    elif menu == "3":
         fonctions.chiffrement_fichier(hash_mdp)
         menu2(username,hash_mdp)
 
-    if menu == "4":
+    elif menu == "4":
         fonctions.dechiffrage_fichier(hash_mdp)
         menu2(username,hash_mdp)
 
+    elif menu == "5":
+        fonctions.renitialisationcle(username, hash_mdp)
+        menu2(username, hash_mdp)
+
     elif menu == "6":
+        fonctions.removeutilisateur(username)
+        menu1()
+
+    elif menu == "7":
         print("Deconnexion")
         menu1()
     else:

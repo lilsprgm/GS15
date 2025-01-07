@@ -348,3 +348,29 @@ def dechiffrage_fichier(hash_mdp):
     except:
         print("Erreur durant le déchiffrement")
         return
+    
+def renitialisationcle(username, hash_mdp):
+    with open('autorite_certificat.json', 'r') as file:
+        data = json.load(file)
+    data['utilisateurs'] = [user for user in data['utilisateurs'] if user['username'] != f'{username}']
+    with open('autorite_certificat.json','w') as file:
+        json.dump(data,file,indent=4)
+    os.remove(f'{username}.json')
+    creation_cle(username,hash_mdp)
+    print("Renitialisation du couple clé publique/clé privé et du certificat")
+
+def removeutilisateur(utilisateur):
+    password = getpass.getpass("Entrez votre mot de passe pour confirmer la suppression de l'utilisateur (ne rien entrer pour annuler) \n")
+    hash_mdp = KDF.hash_password(password)
+    test_mdp = verification_connexion_mdp(utilisateur,hash_mdp)
+    if test_mdp == 1:
+        with open('autorite_certificat.json', 'r') as file:
+            data = json.load(file)
+        data['utilisateurs'] = [user for user in data['utilisateurs'] if user['username'] != f'{utilisateur}']
+        with open('autorite_certificat.json','w') as file:
+            json.dump(data,file,indent=4)
+        os.remove(f'{utilisateur}.json')
+        print(f'Utilisateur {utilisateur} supprimé')
+    else:
+        print(f"Annulation de la suppression de l'utilisateur {utilisateur}")
+        return
