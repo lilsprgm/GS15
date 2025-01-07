@@ -24,6 +24,17 @@ def menu2(username,hash_mdp):
         menu2(username,hash_mdp)
     if menu == "2":
         fonctions.dechiffrement_message(username,hash_mdp)
+
+    if menu == "3":
+        nom_fichier = input("Entrez le nom du fichier à chiffrer\n")
+        Cobra.sym_encryption_cobra(nom_fichier,hash_mdp,12)
+        print("Encryption terminée")
+
+    if menu == "4":
+        nom_fichier = input("Entrez le nom du fichier à déchiffrer\n")
+        Cobra.sym_decryption_cobra(nom_fichier,hash_mdp,12)
+        print ("Décryption terminée")
+
     elif menu == "6":
         print("Deconnexion")
         menu1()
