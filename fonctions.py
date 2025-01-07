@@ -301,3 +301,50 @@ def dechiffrement_message(username,hash_mdp):
     message_clair = data["message"]
     print(f'Le message déchiffré est :{message_clair}')
     os.remove(file_path)
+
+def chiffrement_fichier(hash_mdp):
+    
+    fichier = input("Veuillez entrer le nom du fichier.son extension\n")
+    dossier = os.path.dirname(os.path.abspath(__file__))
+    chemin_fichier = os.path.join(dossier,fichier)
+    if os.path.isfile(chemin_fichier):
+        print("Il est interdit de chiffrer des fichiers déjà dans le coffre fort")
+        return 0
+    else:
+        path = input("Entrez le chemin du fichier que vous souhaitez chiffrer\n")
+        file_path = os.path.join(path,fichier) 
+        if os.path.exists(file_path):
+            try:
+                shutil.move(file_path,chemin_fichier)
+                Cobra.sym_encryption_cobra(fichier,hash_mdp,12)
+                print("Chiffrement terminé")
+            except:
+                print("Erreur lors de l'importation du fichier ou du chiffrement de celui ci")
+        else:
+            print("Le fichier n'existe pas")
+
+def dechiffrage_fichier(hash_mdp):
+    dossier = os.path.dirname(os.path.abspath(__file__))
+    listefichiers=os.listdir(dossier)
+    print("Quel fichier (vous appartenant) souhaitez vous déchiffrer\n")
+    for file in listefichiers:
+        chemin_complet = os.path.join(dossier,file)
+        if os.path.isfile(chemin_complet):
+            print(file)
+    print("\n")
+    fichier = input("")
+    sans_extension = os.path.splitext(fichier)[0]
+    extension = os.path.splitext(fichier)[1]
+    try:
+        newfichier = f'{sans_extension}2{extension}'
+        shutil.copy2(fichier,newfichier)
+        Cobra.sym_decryption_cobra(newfichier,hash_mdp,12)
+        chemin_fichier_déchiffé = input("Où souhaitez vous que votre fichier soit déposé ?\n")
+        chemin = os.path.join(chemin_fichier_déchiffé,newfichier)
+        shutil.move(newfichier,chemin)
+        fichierfinal = os.path.join(chemin_fichier_déchiffé,fichier)
+        os.rename(chemin,fichierfinal)
+        print(f"Fichier clair déposé au chemin suivant : {fichierfinal}")
+    except:
+        print("Erreur durant le déchiffrement")
+        return
