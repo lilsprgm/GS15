@@ -3,6 +3,7 @@ import KDF
 import Cobra
 import getpass
 
+
 def menu1():
     menu = input("Que souhaitez vous faire ? \n <-1-> Connexion \n <-2-> Inscription \n <-3-> Quitter \n \n Veuillez entrer le numéro de fonction choisi\n")
 
@@ -11,44 +12,44 @@ def menu1():
     elif menu == "2":
         inscription()
     elif menu == "3":
-        return
+        exit()
     else:
         print("\nVeuillez entrez un numéro valide\n")
-        menu1()
+        return
 
 def menu2(username,hash_mdp):
-    menu = input(f'Bienvene {username}, que souhaitez vous faire ?\n<-1->Chiffrer un message\n<-2->Déchiffrer un message\n<-3->Chiffrer un fichier\n<-4->Déchiffrer un fichier\n<-5->Renitialiser le couple publique/privé + Certificat\n<-6->Suppression de l utilisateur\n<-7->Deconnexion\n')
-    if menu == "1":
-        message_a_chiffrer = input("Entrez le message que vous souhaitez chiffrer\n")
-        fonctions.chiffrement_message(username,message_a_chiffrer,hash_mdp)
-        menu2(username,hash_mdp)
-    
-    elif menu == "2":
-        fonctions.dechiffrement_message(username,hash_mdp)
-        menu2(username,hash_mdp)
+    run = True
+    while run:
+        menu = input(f'Bienvene {username}, que souhaitez vous faire ?\n<-1->Chiffrer un message\n<-2->Déchiffrer un message\n<-3->Chiffrer un fichier\n<-4->Déchiffrer un fichier\n<-5->Renitialiser le couple publique/privé + Certificat\n<-6->Suppression de l utilisateur\n<-7->Deconnexion\n')
+        if menu == "1":
+            message_a_chiffrer = input("Entrez le message que vous souhaitez chiffrer\n")
+            fonctions.chiffrement_message(username,message_a_chiffrer,hash_mdp)
+            menu2(username,hash_mdp)
 
-    elif menu == "3":
-        fonctions.chiffrement_fichier(hash_mdp)
-        menu2(username,hash_mdp)
+        elif menu == "2":
+            fonctions.dechiffrement_message(username,hash_mdp)
 
-    elif menu == "4":
-        fonctions.dechiffrage_fichier(hash_mdp)
-        menu2(username,hash_mdp)
 
-    elif menu == "5":
-        fonctions.renitialisationcle(username, hash_mdp)
-        menu2(username, hash_mdp)
+        elif menu == "3":
+            fonctions.chiffrement_fichier(hash_mdp)
 
-    elif menu == "6":
-        fonctions.removeutilisateur(username)
-        menu1()
+        elif menu == "4":
+            fonctions.dechiffrage_fichier(hash_mdp)
 
-    elif menu == "7":
-        print("Deconnexion")
-        menu1()
-    else:
-        print("Veuillez entrer un numéro valable")
-        menu2(username,hash_mdp)
+        elif menu == "5":
+            fonctions.renitialisationcle(username, hash_mdp)
+
+        elif menu == "6":
+            fonctions.removeutilisateur(username)
+            run = False
+
+        elif menu == "7":
+            print("Deconnexion")
+            run = False
+        else:
+            print("Veuillez entrer un numéro valable")
+
+    return
 
 def connexion():
 
@@ -56,13 +57,13 @@ def connexion():
 
     if username == "coffrefort":
         print("Connexion interdite")
-        connexion()
+        return
 
     testexistance = fonctions.verificationexistanceuser(username)
 
     if testexistance == 0:
         print(f'{username} n existe pas')
-        menu1()
+        return
 
     certificatpresume = fonctions.generationcertificatcoffrefort()
     verificationcertificat = fonctions.verificationcertificat(certificatpresume)
@@ -80,7 +81,7 @@ def connexion():
         
         if testmdp == 0:
             print("Mot de Passe Incorrect --> Accès refusé")
-            menu1()
+            return
 
         preuve,r = fonctions.calculpreuvezkp(e,public_key,engagement_chiffre,username,hash_mdp)
 
@@ -89,9 +90,10 @@ def connexion():
         if connexion == 1:
             print("Connexion approuvée")
             menu2(username,hash_mdp)
+            return
         else : 
             print("Connexion refusée")
-            menu1()
+            return
 
     else :
         print("Coffre fort Compromis, ne pas rentrer d'informations confidentielles")
@@ -103,13 +105,13 @@ def inscription():
 
     if username == "coffrefort":
         print("Nom d'utilisateur refusé")
-        inscription()
+        return
     
     test = fonctions.verification_creation_user(username)
 
     if test == 0:
         print("Nom d'utilisateur déjà utilisé")
-        inscription()
+        return
     
     motdepasse = fonctions.verificationmdp()
 
@@ -122,5 +124,6 @@ def inscription():
     
 
 if __name__ == '__main__':
-    print("Bienvenu sur le coffre fort le plus sécurisé ! \n ")
-    menu1()
+    while True:
+        print("Bienvenu sur le coffre fort le plus sécurisé ! \n ")
+        menu1()
